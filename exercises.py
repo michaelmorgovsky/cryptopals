@@ -1,6 +1,7 @@
 import string
 import codecs
 import os
+import requests
 
 def xor(c, k):
     return bytes([x ^ k for x in c])
@@ -87,26 +88,22 @@ def exercise2():
 
 def exercise3():
     # https://cryptopals.com/sets/1/challenges/3
-
     encoded_str = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     cipher = bytes.fromhex(encoded_str)
     
     plaintext = xor_against_all_bytes(cipher)
-
-    print(plaintext.decode("utf-8"))
+    assert plaintext.decode("utf-8") == "Cooking MC's like a pound of bacon"
 
 def exercise4():
     # https://cryptopals.com/sets/1/challenges/4
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'exercise4.txt')
-    ciphers = open(path).read(-1).splitlines()
+    ciphers = requests.get('https://cryptopals.com/static/challenge-data/4.txt').text.splitlines()
     
     plaintexts = list()
     for cipher in ciphers:
         cipher = bytes.fromhex(cipher)
         plaintexts.append(xor_against_all_bytes(cipher))
+    assert max_scorer(plaintexts).decode("utf-8") == "Now that the party is jumping\n"
 
-    print(max_scorer(plaintexts).decode("utf-8"))
-        
 def exercise5():
     # https://cryptopals.com/sets/1/challenges/5
     plaintext = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
@@ -120,6 +117,11 @@ def exercise6():
     string2 = "wokka wokka!!!"
     ham_score_test = hamming(string1, string2)
     assert ham_score_test == 37
+
+    cipher = requests.get('https://cryptopals.com/static/challenge-data/6.txt').text
+    print(cipher)
+
+
 
 
 if __name__ == "__main__":
