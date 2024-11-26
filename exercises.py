@@ -45,6 +45,28 @@ def xor_against_all_bytes(c):
             best_text = p
     return best_text
 
+def hamming(value1, value2):
+    ham_score = 0
+    if type(value1) == str:
+        value1 = bytes(value1, 'utf-8')
+    if type(value2) == str:
+        value2 = bytes(value2, 'utf-8')
+
+    bit_string_1 = ""
+    for c in value1:
+        for shift in range(0, 8, 1):
+            bit_string_1 = f"{bit_string_1}{(c >> shift) & 1}"
+
+    bit_string_2 = ""
+    for c in value2:
+        for shift in range(0, 8, 1):
+            bit_string_2 = f"{bit_string_2}{(c >> shift) & 1}"
+
+    for bit1, bit2 in zip(bit_string_1, bit_string_2):
+        if bit1 != bit2:
+            ham_score += 1
+    return ham_score
+
 def exercise1():
     # https://cryptopals.com/sets/1/challenges/1
     hex = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
@@ -92,6 +114,13 @@ def exercise5():
     ciphertext = repeating_xor(plaintext, key).hex()
     assert ciphertext == '0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f'
 
+def exercise6():
+    # https://cryptopals.com/sets/1/challenges/6
+    string1 = "this is a test"
+    string2 = "wokka wokka!!!"
+    ham_score_test = hamming(string1, string2)
+    assert ham_score_test == 37
+
 
 if __name__ == "__main__":
     exercise1()
@@ -99,3 +128,4 @@ if __name__ == "__main__":
     exercise3()
     exercise4()
     exercise5()
+    exercise6()
