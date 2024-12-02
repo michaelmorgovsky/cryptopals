@@ -1,4 +1,5 @@
 import string
+import base64
 import codecs
 import os
 import requests
@@ -71,7 +72,8 @@ def hamming(value1, value2):
 def exercise1():
     # https://cryptopals.com/sets/1/challenges/1
     hex = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
-    b64 = codecs.encode(bytes.fromhex(hex), 'base64', 'strict')
+    b64 = base64.encodebytes(bytes.fromhex(hex))
+
     assert b64 == b'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t\n'
 
 def exercise2():
