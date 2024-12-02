@@ -121,11 +121,43 @@ def exercise6():
     assert ham_score_test == 37
 
     cipher = requests.get('https://cryptopals.com/static/challenge-data/6.txt').text
-    print(cipher)
+    converted = base64.decodebytes(bytes(cipher, 'utf-8'))
 
+    best_ham_score = 999 # Dummy number to represent a bad hamming score
+    best_key_size = 2
+    for keysize in range(2, 41):
+        sample1 = converted[0:keysize]
+        sample2 = converted[keysize:keysize*2]
+        sample3 = converted[keysize*2:keysize*3]
+        sample4 = converted[keysize*3:keysize*4]
+        
+        # Find a potential keysize for the cipher by seeing how much blocks vary from each other in bit size
+        normalized_ham = ((hamming(sample1, sample2) + hamming(sample1, sample3) + hamming(sample1, sample4) + hamming(sample2, sample3) + hamming(sample2, sample4) + hamming(sample3, sample4)) / (keysize))
+        if (normalized_ham < best_ham_score):
+            best_ham_score = normalized_ham
+            best_key_size = keysize
+    blocks = []
 
+    for x in range(0, len(converted), best_key_size):
+        blocks.append(converted[x:keysize+x])
 
+    key = []
+    for key_increment in range(best_key_size):
+        chunk = b""
+        for block in blocks:
+            if key_increment < len(block):
+                chunk += bytes([block[key_increment]])
 
+        best_score = 0
+        best_k = None
+        for x in range(255):
+            if score(xor(chunk, x)) > best_score:
+                best_score = score(xor(chunk, x))
+                best_k = x
+        key.append(best_k)
+
+    assert bytes(key) == b"Terminator X: Bring the noise"
+    
 if __name__ == "__main__":
     exercise1()
     exercise2()
