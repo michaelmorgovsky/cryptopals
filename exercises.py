@@ -4,6 +4,8 @@ import codecs
 import os
 import requests
 
+from Crypto.Cipher import AES
+
 def xor(c, k):
     return bytes([x ^ k for x in c])
 
@@ -157,7 +159,21 @@ def exercise6():
         key.append(best_k)
 
     assert bytes(key) == b"Terminator X: Bring the noise"
+
+def exercise7():
+    # https://cryptopals.com/sets/1/challenges/7
+    cipher = requests.get('https://cryptopals.com/static/challenge-data/7.txt').text
+    converted = base64.decodebytes(bytes(cipher, 'utf-8'))
+
+    key = b"YELLOW SUBMARINE"
+
+    def decrypt_aes_chunk(key, chunk):
+        return AES.new(key, AES.MODE_ECB).decrypt(chunk)
     
+    for chunk in range(0, len(converted), 16):
+        print(decrypt_aes_chunk(key, converted[(chunk)*16:(chunk+1)*16]))
+    
+    print(decrypt_aes_chunk(key, converted).decode('ascii'))
 if __name__ == "__main__":
     exercise1()
     exercise2()
@@ -165,3 +181,4 @@ if __name__ == "__main__":
     exercise4()
     exercise5()
     exercise6()
+    exercise7()
